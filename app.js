@@ -1,99 +1,40 @@
-function customHttp() {
-    return {
-        get(url, cb) {
-            try {
-                const xhr = new XMLHttpRequest();
-                xhr.open('GET', url);
-                xhr.addEventListener('load', () => {
-                    if (Math.floor(xhr.status / 100) !== 2) {
-                        cb(`Error. Status code: ${xhr.status}`, xhr);
-                        return;
-                    }
-                    const response = JSON.parse(xhr.responseText);
-                    cb(null, response);
-                });
-
-                xhr.addEventListener('error', () => {
-                    cb(`Error. Status code: ${xhr.status}`, xhr);
-                });
-
-                xhr.send();
-            } catch (error) {
-                cb(error);
-            }
-        },
-        post(url, body, headers, cb) {
-            try {
-                const xhr = new XMLHttpRequest();
-                xhr.open('POST', url);
-                xhr.addEventListener('load', () => {
-                    if (Math.floor(xhr.status / 100) !== 2) {
-                        cb(`Error. Status code: ${xhr.status}`, xhr);
-                        return;
-                    }
-                    const response = JSON.parse(xhr.responseText);
-                    cb(null, response);
-                });
-
-                xhr.addEventListener('error', () => {
-                    cb(`Error. Status code: ${xhr.status}`, xhr);
-                });
-
-                if (headers) {
-                    Object.entries(headers).forEach(([key, value]) => {
-                        xhr.setRequestHeader(key, value);
-                    });
-                }
-
-                xhr.send(JSON.stringify(body));
-            } catch (error) {
-                cb(error);
-            }
-        },
-    };
-}
-
-// Init http module
-const myHttp = customHttp();
+// let jsonPosts = fetch('https://jsonplaceholder.typicode.com/posts')
+//
+// jsonPosts
+//     .then(response => {
+//         return response.json()
+//     })
+//     .then(posts => console.log(posts))
+//     .catch(err => console.log(err))
 
 function getPost(id) {
     return new Promise((resolve, reject) => {
-        myHttp.get(`https://jsonplaceholder.typicode.com/posts/${id}`, (err, res) => {
-            if (err) {
-                reject(err)
-            }
-            resolve(res)
-        })
+        fetch(`https://jsonplaceholder.typicode.com/posts/${id}`)
+            .then(response => response.json())
+            .then(post => resolve(post))
+            .catch(err => reject(err))
     })
 }
 
-function getPostComments(post) {
-    const {id} = post
-    return new Promise((resolve, reject) => {
-        myHttp.get(`https://jsonplaceholder.typicode.com/comments?postId=${id}`, (err, res) => {
-            if (err) {
-                reject(err)
-            }
-            resolve({post, comments: res})
-        })
-    })
+// getPost(1).then(post => console.log(post))
+
+function getPost2(id) {
+    const [userType, userId] = id.split('-')
+    return fetch(`https://jsonplaceholder.typicode.com/posts/${userId}`)
+        .then(response => response.json())
 }
 
-function getUserCreatedPost(data) {
-    const {post: {userId}} = data
-    return new Promise((resolve, reject) => {
-        myHttp.get(`https://jsonplaceholder.typicode.com/users/${userId}`, (err, res) => {
-            if (err) {
-                reject(err)
-            }
-            resolve({...data, userId: res})
-        })
+// getPost2('user-1')
+//     .then(post => console.log(post))
+//     .catch(err => console.log(err))
+
+function getPost3(id) {
+    return Promise.resolve().then(()=>{
+        const [userType, userId] = id.split('-')
+        return fetch(`https://jsonplaceholder.typicode.com/posts/${userId}`)
+            .then(response => response.json())
     })
 }
-
-getPost(25)
-    .then(post => getPostComments(post))
-    .then(data => getUserCreatedPost(data))
-    .then(fullData => console.log(fullData))
+getPost3(1)
+    .then(post => console.log(post))
     .catch(err => console.log(err))
-    .finally(() => console.log('finally'))
