@@ -1,4 +1,6 @@
 import locations from "./store/locations";
+import '../css/style.css'
+import './plugins/index'
 
 locations.init().then(res => {
     console.log(res)
