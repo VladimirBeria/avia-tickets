@@ -18,6 +18,11 @@
     margin-right: auto;
 }
 
+.mx-auto{
+    margin-left: auto;
+    margin-right: auto;
+}
+
 /*header styles*/
 
 .header .brand-logo {
