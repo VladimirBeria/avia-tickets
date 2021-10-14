@@ -2,13 +2,14 @@ import locations from "./store/locations";
 import '../css/style.css'
 import './plugins/index'
 import formUI from "./views/form";
+import currencyUI from "./views/currency";
 
 document.addEventListener('DOMContentLoaded', () => {
     initApp()
     const form = formUI.form
 
     // events
-    form.addEventListener('submit', (e)=>{
+    form.addEventListener('submit', (e) => {
         e.preventDefault();
         onFormSubmit()
     })
@@ -18,11 +19,23 @@ document.addEventListener('DOMContentLoaded', () => {
         await locations.init()
         formUI.setAutocompleteData(locations.shortCitiesList)
     }
+
     async function onFormSubmit() {
         //get data from inputs
-        const origin = formUI.originValue
-        const destination = formUI.destinationValue
+        const origin = locations.getCityCodeByKey(formUI.originValue)
+        const destination = locations.getCityCodeByKey(formUI.destinationValue)
         const depart_date = formUI.departDateValue
         const return_date = formUI.returnDateValue
+        const currency = currencyUI.currencyValue
+
+        // code, code ,2021-09, 2021-10
+        console.log(origin, destination, depart_date, return_date, currency)
+        await locations.fetchTickets({
+            origin,
+            destination,
+            depart_date,
+            return_date,
+            currency
+        })
     }
 })
