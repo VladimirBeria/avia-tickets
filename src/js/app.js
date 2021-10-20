@@ -3,6 +3,7 @@ import '../css/style.css'
 import './plugins/index'
 import formUI from "./views/form";
 import currencyUI from "./views/currency";
+import ticketsUI from "./views/tickets";
 
 document.addEventListener('DOMContentLoaded', () => {
     initApp()
@@ -14,10 +15,14 @@ document.addEventListener('DOMContentLoaded', () => {
         onFormSubmit()
     })
 
+    form.addEventListener('reset', (e) => {
+        ticketsUI.clearContainer()
+    })
+
     //handlers
     async function initApp() {
         await locations.init()
-        formUI.setAutocompleteData(locations.shortCitiesList)
+        formUI.setAutocompleteData(locations.shortCities)
     }
 
     async function onFormSubmit() {
@@ -28,8 +33,6 @@ document.addEventListener('DOMContentLoaded', () => {
         const return_date = formUI.returnDateValue
         const currency = currencyUI.currencyValue
 
-        // code, code ,2021-09, 2021-10
-        console.log(origin, destination, depart_date, return_date, currency)
         await locations.fetchTickets({
             origin,
             destination,
@@ -37,5 +40,6 @@ document.addEventListener('DOMContentLoaded', () => {
             return_date,
             currency
         })
+        ticketsUI.renderTickets(locations.lastSearch)
     }
 })
